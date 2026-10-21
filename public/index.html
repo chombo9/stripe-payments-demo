@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo de Pagos - Stripe</title>
+    <style>
+        body { font-family: -apple-system, Arial, sans-serif; display: flex;
+            justify-content: center; align-items: center; min-height: 100vh;
+            margin: 0; background: #f6f9fc; gap: 24px; flex-wrap: wrap; }
+        .card { background: white; padding: 40px; border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; width: 280px; }
+        h2 { color: #32325d; margin: 8px 0; }
+        .precio { font-size: 36px; color: #635bff; font-weight: bold; margin: 16px 0; }
+        .precio span { font-size: 14px; color: #8898aa; }
+        button { background: #635bff; color: white; border: none; padding: 14px 32px;
+            font-size: 16px; border-radius: 8px; cursor: pointer; width: 100%; }
+        button:hover { background: #5147e5; }
+        button:disabled { background: #aaa; }
+    </style>
+</head>
+<body>
+<!-- Tarjeta de SUSCRIPCIÓN -->
+<div class="card">
+    <h2>Plan Pro</h2>
+    <p style="color:#8898aa;">Suscripción mensual</p>
+    <div class="precio">$10<span>/mes</span></div>
+    <button onclick="pagar('subscription', this)">Suscribirse</button>
+</div>
+
+<!-- Tarjeta de PAGO ÚNICO -->
+<div class="card">
+    <h2>Producto Premium</h2>
+    <p style="color:#8898aa;">Pago único</p>
+    <div class="precio">$25</div>
+    <button onclick="pagar('payment', this)">Comprar</button>
+</div>
+
+<script>
+    async function pagar(tipo, boton) {
+        boton.disabled = true;
+        boton.textContent = 'Redirigiendo...';
+        try {
+            // Llamamos a nuestro servidor para crear la sesión de pago
+            const resp = await fetch('/crear-checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ tipo })
+            });
+            const datos = await resp.json();
+            // Nos devuelve la URL de Stripe → redirigimos al cliente ahí
+            if (datos.url) {
+                window.location.href = datos.url;
+            } else {
+                alert('Error: ' + (datos.error || 'no se pudo crear el pago'));
+                boton.disabled = false;
+                boton.textContent = tipo === 'subscription' ? 'Suscribirse' : 'Comprar';
+            }
+        } catch (e) {
+            alert('Error de conexión: ' + e.message);
+            boton.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>
