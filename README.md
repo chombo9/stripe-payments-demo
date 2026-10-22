@@ -172,7 +172,7 @@ Once connected, completed payments show up in the server logs:
 
 ## 👤 Author
 
-**Christian García** — Payment Integration Specialist
+**Christian García Nava** — Payment Integration Specialist
 Stripe · CyberSource · Card tokenization · Java/Spring Boot · Node.js
 
 💼 Available for payment integration projects on [Upwork](#) <!-- replace # with your Upwork profile URL -->
